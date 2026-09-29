@@ -23,16 +23,17 @@ omarchy pkg add fcitx5 fcitx5-gtk fcitx5-qt fcitx5-mozc
 
 ## 2. profile
 
-`~/.config/fcitx5/profile` に `keyboard-us` + `mozc` を登録:
+バックアップ → `~/.config/fcitx5/profile` 編集 → サービス再起動。
+`~/.config/fcitx5/profile` に `keyboard-jp` + `mozc` を登録する。
 
 ```ini
 [Groups/0]
 Name=Default
-Default Layout=us
+Default Layout=jp
 DefaultIM=mozc
 
 [Groups/0/Items/0]
-Name=keyboard-us
+Name=keyboard-jp
 
 [Groups/0/Items/1]
 Name=mozc
@@ -42,14 +43,21 @@ Name=mozc
 ```
 
 ```bash
+# profile は fcitx5-configtool 経由でしか更新されないため、既存プロセスはメモリ内の古い値でディスクを上書きする。
+# 必ず停止してから書き込む。
+systemctl --user stop omarchy-fcitx5.service
 cp ~/.config/fcitx5/profile ~/.config/fcitx5/profile.bak.$(date +%s)
 # 編集後:
-fcitx5-remote -r
+systemctl --user start omarchy-fcitx5.service
+sleep 3
+fcitx5-remote -n    # mozc になっていることを確認
 ```
+
+`fcitx5-remote -r` は使えません（profile を再読込しないため）。
 
 ## 3. ホットキー
 
-バックアップ→ `~/.config/fcitx5/config` 編集→リロード:
+バックアップ → `~/.config/fcitx5/config` 編集 → `fcitx5-remote -r`:
 
 ```ini
 [Hotkey/TriggerKeys]
@@ -70,14 +78,12 @@ ShareInputState=All
 ```bash
 cp ~/.config/fcitx5/config ~/.config/fcitx5/config.bak.$(date +%s)
 # 編集後:
-fcitx5-remote -r
-fcitx5-remote -n   # 現在の入力メソッド名を確認
+fcitx5-remote -r     # config のみ対象なので -r でよい
+fcitx5-remote -n
 ```
 
-結果: 変換 → mozc（ひらがな）、無変換 → keyboard-us（英語）、半角/全角 → トグル、`Ctrl+Space` は無効、IME 状態は全アプリで共有。
+結果: 変換 → mozc（ひらがな）、無変換 → keyboard-jp（英語入力）、半角/全角 → トグル、`Ctrl+Space` は無効、IME 状態は全アプリで共有。
 
-## 編集ルール
+- `fcitx5-remote -e` は使わない（`Restart=always` で即再起動し dbus 名競合を起こす）
+- 完了後は `fcitx5-remote -n` で確認し、実キー入力はユーザー自身に試打を依頼する
 
-- 設定変更後は `fcitx5-remote -r` で明示的に再読込する
-- 変換・無変換が効かない場合: `localectl status` で `jp106`、`hyprctl devices` で `Japanese` か、`~/.config/hypr/` のバインドが横取りしていないかを確認
-- `/usr/share/omarchy/` は絶対に触らない（アップデートで上書きされる）
