@@ -1,6 +1,7 @@
 ---
 name: japanese-ime-on-omarchy
 description: Omarchy で fcitx5 + Mozc 日本語入力を構築する。
+disable-model-invocation: true
 ---
 
 # Omarchy 日本語入力セットアップ
@@ -28,7 +29,7 @@ omarchy pkg add fcitx5 fcitx5-gtk fcitx5-qt fcitx5-mozc
 [Groups/0]
 Name=Default
 Default Layout=jp
-DefaultIM=mozc
+DefaultIM=keyboard-jp
 
 [Groups/0/Items/0]
 Name=keyboard-jp
@@ -76,4 +77,3 @@ cp ~/.config/fcitx5/config ~/.config/fcitx5/config.bak.$(date +%s)
 結果: 変換 → mozc（ひらがな）、無変換 → keyboard-jp（英語入力）、半角/全角 → トグル、`Ctrl+Space` は無効、IME 状態は各アプリで独立。
 
 - 設定完了後はユーザーに動作確認を依頼する
-
