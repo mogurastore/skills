@@ -19,8 +19,6 @@ Omarchy（Arch Linux + Hyprland + Wayland、fcitx5 + Mozc）の fcitx5 フルセ
 omarchy pkg add fcitx5 fcitx5-gtk fcitx5-qt fcitx5-mozc
 ```
 
-`fcitx5-configtool` GUI は使わない（以下の直接編集で代替）。
-
 ## 2. profile
 
 バックアップ → `~/.config/fcitx5/profile` 編集 → サービス再起動。
@@ -43,21 +41,16 @@ Name=mozc
 ```
 
 ```bash
-# profile は fcitx5-configtool 経由でしか更新されないため、既存プロセスはメモリ内の古い値でディスクを上書きする。
-# 必ず停止してから書き込む。
+# 必ず停止してからprofileに書き込む。
 systemctl --user stop omarchy-fcitx5.service
 cp ~/.config/fcitx5/profile ~/.config/fcitx5/profile.bak.$(date +%s)
-# 編集後:
+# 編集
 systemctl --user start omarchy-fcitx5.service
-sleep 3
-fcitx5-remote -n    # mozc になっていることを確認
 ```
-
-`fcitx5-remote -r` は使えません（profile を再読込しないため）。
 
 ## 3. ホットキー
 
-バックアップ → `~/.config/fcitx5/config` 編集 → `fcitx5-remote -r`:
+バックアップ → `~/.config/fcitx5/config` 編集。
 
 ```ini
 [Hotkey/TriggerKeys]
@@ -72,18 +65,15 @@ fcitx5-remote -n    # mozc になっていることを確認
 
 ```ini
 [Behavior]
-ShareInputState=All
+ShareInputState=No
 ```
 
 ```bash
 cp ~/.config/fcitx5/config ~/.config/fcitx5/config.bak.$(date +%s)
-# 編集後:
-fcitx5-remote -r     # config のみ対象なので -r でよい
-fcitx5-remote -n
+# 編集
 ```
 
-結果: 変換 → mozc（ひらがな）、無変換 → keyboard-jp（英語入力）、半角/全角 → トグル、`Ctrl+Space` は無効、IME 状態は全アプリで共有。
+結果: 変換 → mozc（ひらがな）、無変換 → keyboard-jp（英語入力）、半角/全角 → トグル、`Ctrl+Space` は無効、IME 状態は各アプリで独立。
 
-- `fcitx5-remote -e` は使わない（`Restart=always` で即再起動し dbus 名競合を起こす）
-- 完了後は `fcitx5-remote -n` で確認し、実キー入力はユーザー自身に試打を依頼する
+- 設定完了後はユーザーに動作確認を依頼する
 
