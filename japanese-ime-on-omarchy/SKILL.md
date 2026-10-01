@@ -12,7 +12,11 @@ Omarchy（Arch Linux + Hyprland + Wayland、fcitx5 + Mozc）の fcitx5 フルセ
 
 導入済みか調査し、未導入があればユーザーに実行を促す（スキル側では実行しない）。
 
-調査: `omarchy pkg present fcitx5 fcitx5-gtk fcitx5-qt fcitx5-mozc`
+調査コマンド:
+
+```bash
+omarchy pkg present fcitx5 fcitx5-gtk fcitx5-qt fcitx5-mozc
+```
 
 提示コマンド:
 
