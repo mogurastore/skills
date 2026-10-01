@@ -62,9 +62,7 @@ systemctl --user start omarchy-fcitx5.service
 
 [Hotkey/DeactivateKeys]
 0=Muhenkan
-```
 
-```ini
 [Behavior]
 ShareInputState=No
 ```
