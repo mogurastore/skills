@@ -53,9 +53,10 @@ omarchy pkg add fcitx5 fcitx5-gtk fcitx5-qt fcitx5-mozc
 
 ## 2. profile
 
-サービス停止 → バックアップ → `~/.config/fcitx5/profile` 編集 → サービス起動。
+サービス停止 → バックアップ（存在する場合のみ） → `~/.config/fcitx5/profile` 編集 → サービス起動。
 `~/.config/fcitx5/profile` に `keyboard-jp` + `mozc` を登録する。
 既存内容は `[Groups/0]` と `[GroupOrder]` の該当箇所のみ置換し、他のセクションには触れない。
+ファイルが存在しない場合はバックアップをスキップし、そのまま新規作成する。
 
 ```ini
 [Groups/0]
@@ -76,15 +77,16 @@ Name=mozc
 ```bash
 # 必ず停止してからprofileに書き込む。
 systemctl --user stop omarchy-fcitx5.service
-cp ~/.config/fcitx5/profile ~/.config/fcitx5/profile.bak.$(date +%s)
+if [ -f ~/.config/fcitx5/profile ]; then cp ~/.config/fcitx5/profile ~/.config/fcitx5/profile.bak.$(date +%s); fi
 # 編集
 systemctl --user start omarchy-fcitx5.service
 ```
 
 ## 3. ホットキー
 
-バックアップ → `~/.config/fcitx5/config` 編集。
+バックアップ（存在する場合のみ） → `~/.config/fcitx5/config` 編集。
 `[Hotkey/TriggerKeys]`、`[Hotkey/ActivateKeys]`、`[Hotkey/DeactivateKeys]`、`[Behavior]` の該当箇所のみ置換し、他のセクションには触れない。
+ファイルが存在しない場合はバックアップをスキップし、そのまま新規作成する。
 
 ```ini
 [Hotkey/TriggerKeys]
@@ -101,7 +103,7 @@ ShareInputState=No
 ```
 
 ```bash
-cp ~/.config/fcitx5/config ~/.config/fcitx5/config.bak.$(date +%s)
+if [ -f ~/.config/fcitx5/config ]; then cp ~/.config/fcitx5/config ~/.config/fcitx5/config.bak.$(date +%s); fi
 # 編集
 ```
 
