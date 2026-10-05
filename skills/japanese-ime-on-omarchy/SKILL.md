@@ -26,7 +26,7 @@ omarchy pkg add fcitx5 fcitx5-gtk fcitx5-qt fcitx5-mozc
 
 ## 2. profile
 
-バックアップ → `~/.config/fcitx5/profile` 編集 → サービス再起動。
+サービス停止 → バックアップ → `~/.config/fcitx5/profile` 編集 → サービス起動。
 `~/.config/fcitx5/profile` に `keyboard-jp` + `mozc` を登録する。
 
 ```ini
