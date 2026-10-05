@@ -84,7 +84,8 @@ systemctl --user start omarchy-fcitx5.service
 
 ## 3. ホットキー
 
-バックアップ（存在する場合のみ） → `~/.config/fcitx5/config` 編集。
+バックアップ（存在する場合のみ） → `~/.config/fcitx5/config` 編集 → サービス再起動。
+`~/.config/fcitx5/config` の編集だけでは反映されないため、必ず再起動して反映させる。
 `[Hotkey/TriggerKeys]`、`[Hotkey/ActivateKeys]`、`[Hotkey/DeactivateKeys]`、`[Behavior]` の該当箇所のみ置換し、他のセクションには触れない。
 ファイルが存在しない場合はバックアップをスキップし、そのまま新規作成する。
 
@@ -105,6 +106,9 @@ ShareInputState=No
 ```bash
 if [ -f ~/.config/fcitx5/config ]; then cp ~/.config/fcitx5/config ~/.config/fcitx5/config.bak.$(date +%s); fi
 # 編集
+# configは再起動するまで反映されないため、必ずrestartする。
+systemctl --user restart omarchy-fcitx5.service
+systemctl --user is-active omarchy-fcitx5.service
 ```
 
 結果: 変換 → mozc（ひらがな）、無変換 → keyboard-jp（英語入力）、半角/全角 → トグル、`Ctrl+Space` は無効、IME 状態は各アプリで独立。
