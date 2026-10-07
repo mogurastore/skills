@@ -1,0 +1,14 @@
+name: agent-skills
+version: 1.0.0
+targets:
+  - agent-skills
+
+dependencies:
+  apm:
+    - humanlayer/skills/plugins/show-me
+    - git: mattpocock/skills
+      skills:
+        - pr
+  mcp: []
+includes: auto
+scripts: {}
