@@ -37,6 +37,32 @@ dependencies:
   skill_subset:
   - pr
   declared_license: MIT
+- repo_url: openai/skills
+  name: skill-creator
+  host: github.com
+  resolved_commit: 49f948faa9258a0c61caceaf225e179651397431
+  version: unknown
+  virtual_path: skills/.system/skill-creator
+  is_virtual: true
+  package_type: claude_skill
+  deployed_files:
+  - .agents/skills/skill-creator
+  - .agents/skills/skill-creator/LICENSE.txt
+  - .agents/skills/skill-creator/SKILL.md
+  - .agents/skills/skill-creator/agents/openai.yaml
+  - .agents/skills/skill-creator/references/openai_yaml.md
+  - .agents/skills/skill-creator/scripts/generate_openai_yaml.py
+  - .agents/skills/skill-creator/scripts/init_skill.py
+  - .agents/skills/skill-creator/scripts/quick_validate.py
+  deployed_file_hashes:
+    .agents/skills/skill-creator/LICENSE.txt: sha256:cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30
+    .agents/skills/skill-creator/SKILL.md: sha256:a17383bfb1448637ac1f757ad891ddb9676fa30b0eff620200f0e1cbc0cc0d50
+    .agents/skills/skill-creator/agents/openai.yaml: sha256:fcc3ba02bdf8d6df1f891637cf5336d2d7ef87bb8910fa622bd150c8e0d4c55b
+    .agents/skills/skill-creator/references/openai_yaml.md: sha256:9fb5928b7f4a746fdb39df503ebbd7a659d5e64b47f85a60626aa1a03fd76b17
+    .agents/skills/skill-creator/scripts/generate_openai_yaml.py: sha256:b8f6be33a9d72dd7a8da02e7a9fffea23dc79e94862e6dd6358b57a8899d8f73
+    .agents/skills/skill-creator/scripts/init_skill.py: sha256:bcb8982d3f033a094f2f1be43123ac8537e2562d25d8ba4d8ef2196ae514d96d
+    .agents/skills/skill-creator/scripts/quick_validate.py: sha256:6cc9dc3199c935916cf6f73fcbbbb0e3bb1b58c8f5109fefa499978908164f51
+  content_hash: sha256:d354f0a7ccb564cfa8f84818703b3cc03eae7005aeb3c107e6c8a4f2eb70f595
 deployments:
 - kind: project-relative
   target: agent-skills
@@ -101,3 +127,75 @@ deployments:
   - humanlayer/skills/plugins/show-me
   active_owner: humanlayer/skills/plugins/show-me
   content_hash: sha256:a1499d95abd8447558c535fe5554adcc3c9b988a0a39264a6283d430effe1e94
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/skill-creator
+  runtime: null
+  scope: project
+  owners:
+  - openai/skills/skills/.system/skill-creator
+  active_owner: openai/skills/skills/.system/skill-creator
+  content_hash: null
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/skill-creator/LICENSE.txt
+  runtime: null
+  scope: project
+  owners:
+  - openai/skills/skills/.system/skill-creator
+  active_owner: openai/skills/skills/.system/skill-creator
+  content_hash: sha256:cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/skill-creator/SKILL.md
+  runtime: null
+  scope: project
+  owners:
+  - openai/skills/skills/.system/skill-creator
+  active_owner: openai/skills/skills/.system/skill-creator
+  content_hash: sha256:a17383bfb1448637ac1f757ad891ddb9676fa30b0eff620200f0e1cbc0cc0d50
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/skill-creator/agents/openai.yaml
+  runtime: null
+  scope: project
+  owners:
+  - openai/skills/skills/.system/skill-creator
+  active_owner: openai/skills/skills/.system/skill-creator
+  content_hash: sha256:fcc3ba02bdf8d6df1f891637cf5336d2d7ef87bb8910fa622bd150c8e0d4c55b
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/skill-creator/references/openai_yaml.md
+  runtime: null
+  scope: project
+  owners:
+  - openai/skills/skills/.system/skill-creator
+  active_owner: openai/skills/skills/.system/skill-creator
+  content_hash: sha256:9fb5928b7f4a746fdb39df503ebbd7a659d5e64b47f85a60626aa1a03fd76b17
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/skill-creator/scripts/generate_openai_yaml.py
+  runtime: null
+  scope: project
+  owners:
+  - openai/skills/skills/.system/skill-creator
+  active_owner: openai/skills/skills/.system/skill-creator
+  content_hash: sha256:b8f6be33a9d72dd7a8da02e7a9fffea23dc79e94862e6dd6358b57a8899d8f73
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/skill-creator/scripts/init_skill.py
+  runtime: null
+  scope: project
+  owners:
+  - openai/skills/skills/.system/skill-creator
+  active_owner: openai/skills/skills/.system/skill-creator
+  content_hash: sha256:bcb8982d3f033a094f2f1be43123ac8537e2562d25d8ba4d8ef2196ae514d96d
+- kind: project-relative
+  target: agent-skills
+  value: .agents/skills/skill-creator/scripts/quick_validate.py
+  runtime: null
+  scope: project
+  owners:
+  - openai/skills/skills/.system/skill-creator
+  active_owner: openai/skills/skills/.system/skill-creator
+  content_hash: sha256:6cc9dc3199c935916cf6f73fcbbbb0e3bb1b58c8f5109fefa499978908164f51
