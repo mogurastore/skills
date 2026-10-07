@@ -9,6 +9,7 @@ dependencies:
     - git: mattpocock/skills
       skills:
         - pr
+    - openai/skills/skills/.system/skill-creator
   mcp: []
 includes: auto
 scripts: {}
