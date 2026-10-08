@@ -1,7 +1,6 @@
 ---
 name: japanese-ime-on-omarchy
-description: Omarchy で fcitx5 + Mozc 日本語入力を構築する。
-disable-model-invocation: true
+description: Omarchy で fcitx5 + Mozc 日本語入力を構築する。ユーザーが日本語入力のセットアップを明示的に依頼したときにのみ使う。
 ---
 
 # Omarchy 日本語入力セットアップ

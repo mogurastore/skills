@@ -1,7 +1,6 @@
 ---
 name: audit-docker-image
 description: ユーザーが明示的に指定したときに限り、Dockerイメージのビルド・Trivy脆弱性スキャン・CVE深掘りを行う。DockerfileやComposeの特定、Trivy詳細JSON保存、重大度別集計の簡潔JSONサマリー作成、指定CVEの修正案提示の手順と出力形式を定義する。
-disable-model-invocation: true
 ---
 
 # Audit Docker Images

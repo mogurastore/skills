@@ -1,6 +1,6 @@
 ---
 name: create-untracked-directory
-description: ユーザー指定名でgit管理外の作業用ディレクトリを新規作成し、内部を全除外する.gitignoreを配置する。tmp作業場、一時出力、実験用フォルダが欲しいときに使う。
+description: ユーザー指定名でgit管理外の作業用ディレクトリを新規作成し、内部を全除外する.gitignoreを配置する。ユーザーが作業用ディレクトリの作成を明示的に依頼したときにのみ使い、tmp作業場、一時出力、実験用フォルダが欲しいときに使う。
 ---
 
 # Create Untracked Directory
