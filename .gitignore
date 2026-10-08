@@ -1,3 +1,6 @@
 
 # APM dependencies
 apm_modules/
+
+# apm deploy target (local only, not for `npx skills add` distribution)
+.agents/skills/
