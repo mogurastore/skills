@@ -1,6 +1,6 @@
 ---
 name: audit-docker-image
-description: "DockerイメージをビルドしTrivyでスキャンして詳細JSON保存と重大度別サマリーJSON作成を行う。CVE深掘りとベースイメージ更新案提示付き。ユーザーが明示的に依頼した時のみ使う。Dockerfile audit, docker image scan, trivy, CVE fix triggers."
+description: "DockerイメージをビルドしTrivyでスキャンして詳細JSON保存と重大度別サマリーJSON作成を行う。スキャン専用。ベースイメージ選定は扱わない。ユーザーが明示的に依頼した時のみ使う。Dockerfile audit, docker image scan, trivy triggers."
 ---
 
 # Dockerイメージ監査
@@ -10,11 +10,10 @@ description: "DockerイメージをビルドしTrivyでスキャンして詳細J
 ## 前提条件
 
 - 必須ツールは `docker`, `trivy`, `jq`。不足があれば報告して停止すること。インストールしないこと。
-- 深掘り時のみ `regctl` (docker run経由) と `docker scout` を追加で要求する。
 - 作業場所はDockerfile / Composeのあるリポジトリルート。`./tmp` はそこからの相対パス。
 - `<skill-dir>` はこのSKILL.mdがあるディレクトリ。スクリプトは `<skill-dir>/scripts/scan.sh`、`<skill-dir>/scripts/summarize.sh` の絶対パスまたは相対パスで呼ぶこと。対象リポジトリの `./scripts/` には存在しない。
 - レジストリへのpush、稼働コンテナや本番環境の変更をしないこと。
-- Dockerfileを編集しないこと。修正案提示までとする。
+- Dockerfileを編集しないこと。
 
 ## 1. 対象の特定
 
@@ -54,7 +53,7 @@ description: "DockerイメージをビルドしTrivyでスキャンして詳細J
 - 失敗JSONの形式: `{"status":"incomplete","scannedAt":"...","image":"...","failedStep":"build|scan","errorSummary":"1-2行","pendingChecks":[...],"detailJsonPath":null}`。`scannedAt` は `date -u +%FT%TZ` で取得する。
 - 詳細JSONが存在しないことだけを理由にscan失敗と判断しない。ビルド失敗かスキャン実行後の失敗かを、実際に実行した手順と終了結果で分類する。summarize.shを実行した場合、その失敗は `failedStep: "summarize"` とする。
 
-## 6. 深掘り (条件付き)
+## 6. 終了
 
-- サマリー提示後に深掘りテーマを自由入力で聞く (例: CVE番号、パッケージ名、重大度、上位3件)。入力がなければ終了すること。
-- 入力がある場合のみ `references/deep-dive.md` を読んで従うこと。
+- サマリーJSON提示で終了すること。CVE解説やベースイメージ更新案は扱わないこと。
+- クリーンなベースイメージを探す場合は `suggest-clean-base-image` スキルを使うこと。
