@@ -8,7 +8,10 @@ IMAGE="${1:?usage: scan.sh IMAGE DETAIL_JSON}"
 DETAIL="${2:?usage: scan.sh IMAGE DETAIL_JSON}"
 
 mkdir -p "$(dirname "$DETAIL")"
-if ! trivy image --image-src docker --format json --output "$DETAIL" "$IMAGE"; then
-  rm -f "$DETAIL"
+TMP="$(mktemp "$(dirname "$DETAIL")/.trivy-scan.XXXXXX")"
+trap 'rm -f "$TMP"' EXIT INT HUP TERM
+if ! trivy image --image-src docker --format json --output "$TMP" "$IMAGE"; then
   exit 1
 fi
+mv "$TMP" "$DETAIL"
+trap - EXIT INT HUP TERM

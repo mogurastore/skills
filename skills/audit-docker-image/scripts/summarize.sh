@@ -52,6 +52,12 @@ if ! jq empty "$DETAIL" >/dev/null 2>&1; then
   exit 1
 fi
 
+# JSONとして有効なだけではTrivyレポートとは限らない。
+if ! jq -e 'type == "object" and (.Results | type == "array")' "$DETAIL" >/dev/null 2>&1; then
+  write_incomplete "summarize" "detail JSON does not have the expected Trivy Results array: $DETAIL"
+  exit 1
+fi
+
 if ! jq \
   --arg scannedAt "$SCANNED_AT" \
   --arg image "$IMAGE" \

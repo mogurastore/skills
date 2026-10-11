@@ -26,7 +26,7 @@ description: "DockerイメージをビルドしTrivyでスキャンして詳細J
 ## 2. ビルドか再利用かの確認
 
 - 二択で質問すること。推測で決めないこと。
-- ビルドする場合: Dockerfileとコンテキストを明示してから `docker build` を実行する。
+- ビルドする場合: Dockerfileとコンテキストを明示してから `docker build` を実行する。失敗した場合はスキャンに進まず、5の手順で `failedStep: "build"` の incomplete JSON を出力する。
 - 再利用する場合: `docker image inspect <project>-<service>:audit` で存在確認する。なければビルドするか確認する。
 
 ## 3. スキャン
@@ -34,7 +34,7 @@ description: "DockerイメージをビルドしTrivyでスキャンして詳細J
 - 合意したイメージ名と詳細パスで `<skill-dir>/scripts/scan.sh` を実行する:
   `"<skill-dir>/scripts/scan.sh" "<project>-<service>:audit" "./tmp/<project>-<service>-YYYY-MM-DD.trivy.json"`
 - スクリプト内で `--image-src docker` を付けてローカルの `:audit` タグを参照させる。日付は `date +%F` で取る。
-- 失敗時は詳細JSONが残らない。5に進むこと。
+- スキャンを実行した後に失敗した場合は詳細JSONが残らない。5に進むこと。ビルド失敗時にはスキャン失敗として扱わないこと。
 
 ## 4. サマリー作成
 
@@ -49,7 +49,10 @@ description: "DockerイメージをビルドしTrivyでスキャンして詳細J
 - summarize.shは同一パス指定以外は必ず出力JSONを書く。終了0は `complete`、非0は `incomplete`。
 - `incomplete` を脆弱性0件として扱わないこと。形式:
   `{"status":"incomplete","scannedAt":"...","image":"...","failedStep":"build|scan|summarize","errorSummary":"1-2行","pendingChecks":[...],"detailJsonPath":null}`
-- 詳細JSONが存在しない場合はscan失敗とみなす。summarize.shは `failedStep: "summarize"` で書くため、agentが `"scan"` に書き換えて提示すること。
+- ビルド失敗時は、サマリー出力先に次の形式のJSONを書き、`failedStep` を `build`、`errorSummary` をビルドエラーの要約にする。スキャンは実行しない。
+- スキャン実行後に失敗した場合は、サマリー出力先に同じ形式のJSONを書き、`failedStep` を `scan`、`errorSummary` をスキャンエラーの要約にする。
+- 失敗JSONの形式: `{"status":"incomplete","scannedAt":"...","image":"...","failedStep":"build|scan","errorSummary":"1-2行","pendingChecks":[...],"detailJsonPath":null}`。`scannedAt` は `date -u +%FT%TZ` で取得する。
+- 詳細JSONが存在しないことだけを理由にscan失敗と判断しない。ビルド失敗かスキャン実行後の失敗かを、実際に実行した手順と終了結果で分類する。summarize.shを実行した場合、その失敗は `failedStep: "summarize"` とする。
 
 ## 6. 深掘り (条件付き)
 
