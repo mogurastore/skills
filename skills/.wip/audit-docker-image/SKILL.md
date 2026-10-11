@@ -109,4 +109,16 @@ jq -c '.Results[] | (.Vulnerabilities // [])[] | {cve: .VulnerabilityID, severit
 - 影響範囲、重大度根拠、悪用条件を説明する。
 - 修正案はベースイメージのバージョン更新のみとする（例: `alpine:3.21 → 3.22`）。同一タグ再ビルドや個別パッケージ更新は書かない。
 - 未確認の案を「見込み」「解決しなければ」で並べない。各案は Trivy の `FixedVersion` と公式パッケージ情報で確認できたものだけ書く。
+- ベースイメージ候補の探索はエージェントが行う。効率重視のため `pull` はせず、`regctl tag ls` と `docker scout cves registry://` によるレジストリ照会のみとする。
+  ```sh
+  # 候補タグ一覧（例: alpine の 3.22 系パッチ）
+  docker run --rm regclient/regctl:latest tag ls alpine --include '3\.22\.[0-9]+$'
+  # 新しい順に CVE の有無だけ確認（registry:// は pull しない）
+  for tag in $(docker run --rm regclient/regctl:latest tag ls alpine --include '3\.22\.[0-9]+$' | sort -Vr); do
+    echo "=== alpine:$tag ==="
+    docker scout cves "registry://alpine:$tag" --only-cve-id CVE-XXXX-XXXX
+  done
+  ```
+- 判定は `No vulnerable package detected` を修正済み/非該当、`Packages and Vulnerabilities` に CVE が出れば未修正とする。存在しない CVE-ID でも `No vulnerable` になるため、先にフィルタ無しで当該 CVE が検出されることを確認してから提案する。
+- Dockerfile の変更はユーザーが担当する。エージェントは Dockerfile を編集せず、修正案提示までとする。
 - 出力は 5 行以内の箇条書きにする。形式: 対象 / 内容 1 行 / 条件 1 行 / 修正案 1-2 行 / 根拠 1 行。
