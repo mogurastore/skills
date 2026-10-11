@@ -12,6 +12,7 @@ description: "DockerイメージをビルドしTrivyでスキャンして詳細J
 - 必須ツールは `docker`, `trivy`, `jq`。不足があれば報告して停止すること。インストールしないこと。
 - 深掘り時のみ `regctl` (docker run経由) と `docker scout` を追加で要求する。
 - 作業場所はDockerfile / Composeのあるリポジトリルート。`./tmp` はそこからの相対パス。
+- `<skill-dir>` はこのSKILL.mdがあるディレクトリ。スクリプトは `<skill-dir>/scripts/scan.sh`、`<skill-dir>/scripts/summarize.sh` の絶対パスまたは相対パスで呼ぶこと。対象リポジトリの `./scripts/` には存在しない。
 - レジストリへのpush、稼働コンテナや本番環境の変更をしないこと。
 - Dockerfileを編集しないこと。修正案提示までとする。
 
@@ -30,23 +31,25 @@ description: "DockerイメージをビルドしTrivyでスキャンして詳細J
 
 ## 3. スキャン
 
-- 合意したイメージ名と詳細パスで `scripts/scan.sh` を実行する:
-  `scripts/scan.sh "<project>-<service>:audit" "./tmp/<project>-<service>-YYYY-MM-DD.trivy.json"`
+- 合意したイメージ名と詳細パスで `<skill-dir>/scripts/scan.sh` を実行する:
+  `"<skill-dir>/scripts/scan.sh" "<project>-<service>:audit" "./tmp/<project>-<service>-YYYY-MM-DD.trivy.json"`
 - スクリプト内で `--image-src docker` を付けてローカルの `:audit` タグを参照させる。日付は `date +%F` で取る。
-- 失敗時は5に進むこと。
+- 失敗時は詳細JSONが残らない。5に進むこと。
 
 ## 4. サマリー作成
 
-- 詳細JSONをコンテキストに読まず `scripts/summarize.sh` を実行する:
-  `scripts/summarize.sh "<image>" "<detail>" "<output>"`
+- 詳細JSONをコンテキストに読まず `<skill-dir>/scripts/summarize.sh` を実行する:
+  `"<skill-dir>/scripts/summarize.sh" "<image>" "<detail>" "<output>"`
+- 詳細JSONと出力JSONは必ず別ファイルにすること。同一パス指定はエラーになる。
 - スクリプトが `scannedAt` (`date -u +%FT%TZ`)、`trivyVersion`、`imageId`、`imageCreated` を自動取得し、`complete` JSONを書く。内容は `severityCounts` (CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN, TOTAL)、重大度順・CVE番号順の上位10件 `findings`、`omittedCount = TOTAL - findings.length`、`detailJsonPath`。
 - サマリーJSONの中身のみ提示すること。
 
 ## 5. 失敗時の扱い
 
-- スクリプトは必ず出力JSONを書く。終了0は `complete`、非0は `incomplete`。
+- summarize.shは同一パス指定以外は必ず出力JSONを書く。終了0は `complete`、非0は `incomplete`。
 - `incomplete` を脆弱性0件として扱わないこと。形式:
   `{"status":"incomplete","scannedAt":"...","image":"...","failedStep":"build|scan|summarize","errorSummary":"1-2行","pendingChecks":[...],"detailJsonPath":null}`
+- 詳細JSONが存在しない場合はscan失敗とみなす。summarize.shは `failedStep: "summarize"` で書くため、agentが `"scan"` に書き換えて提示すること。
 
 ## 6. 深掘り (条件付き)
 

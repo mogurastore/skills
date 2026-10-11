@@ -1,7 +1,8 @@
 #!/bin/sh
 # Trivy詳細JSONから小さなサマリーJSONを作る。詳細JSONを会話に読まないこと。
 # 使い方: summarize.sh イメージ 詳細JSON 出力JSON
-# 出力JSONは必ず書く。complete時は0、incomplete時は1で終了する。
+# 詳細JSONと出力JSONは必ず別ファイルにすること。同一の場合は何も書かず非0で終了する。
+# それ以外は出力JSONを必ず書く。complete時は0、incomplete時は1で終了する。
 set -eu
 
 IMAGE="${1:?usage: summarize.sh IMAGE DETAIL_JSON OUTPUT_JSON}"
@@ -9,6 +10,20 @@ DETAIL="${2:?usage: summarize.sh IMAGE DETAIL_JSON OUTPUT_JSON}"
 OUTPUT="${3:?usage: summarize.sh IMAGE DETAIL_JSON OUTPUT_JSON}"
 
 mkdir -p "$(dirname "$OUTPUT")"
+
+# DETAILとOUTPUTが同一ファイルだとリダイレクトで入力を消すため、先に弾く。
+# この場合はOUTPUTを書かずに終了する (書けばDETAILを破壊するため)。
+if [ "$DETAIL" = "$OUTPUT" ]; then
+  echo "error: DETAIL and OUTPUT must be different files: $DETAIL" >&2
+  exit 1
+fi
+if [ -e "$DETAIL" ] && [ -e "$OUTPUT" ] && [ "$DETAIL" -ef "$OUTPUT" ]; then
+  echo "error: DETAIL and OUTPUT must be different files: $DETAIL" >&2
+  exit 1
+fi
+
+TMP="$(mktemp "$(dirname "$OUTPUT")/.summarize.XXXXXX")"
+trap 'rm -f "$TMP"' EXIT INT HUP TERM
 SCANNED_AT="$(date -u +%FT%TZ)"
 TRIVY_VERSION="$(trivy --version 2>&1 | head -n 1 || true)"
 IMAGE_ID="$(docker image inspect "$IMAGE" --format '{{.Id}}' 2>/dev/null || true)"
@@ -24,7 +39,7 @@ write_incomplete() {
     '{status:"incomplete",scannedAt:$scannedAt,image:$image,
       failedStep:$failedStep,errorSummary:$errorSummary,
       pendingChecks:["未実施の確認事項を手動で確認する"],
-      detailJsonPath:null}' > "$OUTPUT"
+      detailJsonPath:null}' > "$TMP" && mv "$TMP" "$OUTPUT"
 }
 
 if [ ! -f "$DETAIL" ]; then
@@ -37,7 +52,7 @@ if ! jq empty "$DETAIL" >/dev/null 2>&1; then
   exit 1
 fi
 
-jq \
+if ! jq \
   --arg scannedAt "$SCANNED_AT" \
   --arg image "$IMAGE" \
   --arg imageId "$IMAGE_ID" \
@@ -61,4 +76,9 @@ jq \
        UNKNOWN:($counts.UNKNOWN//0), TOTAL:$total},
      findings:$findings, omittedCount:($total - ($findings|length)),
      detailJsonPath:$detailPath}
-  ' "$DETAIL" > "$OUTPUT"
+  ' "$DETAIL" > "$TMP"; then
+  write_incomplete "summarize" "failed to summarize: $DETAIL"
+  exit 1
+fi
+mv "$TMP" "$OUTPUT"
+trap - EXIT INT HUP TERM
